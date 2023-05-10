@@ -107,13 +107,13 @@ impl Game {
 
 
 #[program]
-// pub mod tic_tac_toe {
-//     use super::*;
+pub mod tic_tac_toe {
+    use super::*;
 
-//     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-//         Ok(())
-//     }
-// }
+    // pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+    //     Ok(())
+    // }
+}
 
 pub fn setup_game(ctx: Context<SetupGame>, player_two: Pubkey) -> Result<()> {
     ctx.accounts.game.start([ctx.accounts.player_one.key(), player_two])
@@ -157,7 +157,7 @@ pub enum GameState {
 pub enum Sign {
     X,
     O,
-}.
+}
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct Tile {
