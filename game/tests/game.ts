@@ -1,16 +1,43 @@
-import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
-import { Game } from "../target/types/game";
+import * as anchor from '@coral-xyz/anchor';
+import { Program } from '@coral-xyz/anchor';
+import { PublicKey } from '@solana/web3.js';
+import { Game } from '../target/types/game';
+import { expect } from 'chai';
 
-describe("game", () => {
-  // Configure the client to use the local cluster.
-  anchor.setProvider(anchor.AnchorProvider.env());
+describe('game', async() => {
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
 
   const program = anchor.workspace.Game as Program<Game>;
 
-  it("Is initialized!", async () => {
-    // Add your test here.
-    const tx = await program.methods.initialize().rpc();
-    console.log("Your transaction signature", tx);
+  it('Sets and changes name!', async () => {
+    const [userStatsPDA, _] = await PublicKey
+      .findProgramAddress(
+        [
+          anchor.utils.bytes.utf8.encode("user-stats"),
+          provider.wallet.publicKey.toBuffer()
+        ],
+        program.programId
+      );
+
+    await program.methods
+      .createUserStats("brian")
+      .accounts({
+        user: provider.wallet.publicKey,
+        userStats: userStatsPDA,
+      })
+      .rpc();
+
+    expect((await program.account.userStats.fetch(userStatsPDA)).name).to.equal("brian");
+
+    // await program.methods
+    //   .changeUserName("tom")
+    //   .accounts({
+    //     user: provider.wallet.publicKey,
+    //     userStats: userStatsPDA
+    //   })
+    //   .rpc();
+
+    // expect((await program.account.userStats.fetch(userStatsPDA)).name).to.equal("tom");
   });
 });
